@@ -1,1 +1,97 @@
-[]
+[
+  {
+    "id": 1,
+    "section": "法脈",
+    "question": "曹溪普傳期起始時間是從六祖惠能大師開始",
+    "options": [
+      "是",
+      "否"
+    ],
+    "answer": 0,
+    "explanation": ""
+  },
+  {
+    "id": 2,
+    "section": "法脈",
+    "question": "一花開五葉，結果自然成是五祖對六祖的預言",
+    "options": [
+      "是",
+      "否"
+    ],
+    "answer": 1,
+    "explanation": "為達摩祖師的預言"
+  },
+  {
+    "id": 3,
+    "section": "法脈",
+    "question": "所謂三期傳佛眼，下列何者為非？",
+    "options": [
+      "1曹溪普傳期始自惠能大師",
+      "2中台宗承臨濟黃龍",
+      "3溈仰宗之名源自溈山臨佑和仰山慧寂",
+      "4禪宗學人始有道場源自馬祖道一禪師"
+    ],
+    "answer": 0,
+    "explanation": "中台廣傳期起始是從虛雲老和尚開始"
+  },
+  {
+    "id": 4,
+    "section": "法脈",
+    "question": "中台宗承臨濟宗黃龍派？",
+    "options": [
+      "是",
+      "否"
+    ],
+    "answer": 1,
+    "explanation": "臨濟楊岐派"
+  },
+  {
+    "id": 5,
+    "section": "臨濟",
+    "question": "臨濟義玄禪師師承？",
+    "options": [
+      "1大梅法常",
+      "2大愚禪師",
+      "3黃檗希運",
+      "4馬祖道一"
+    ],
+    "answer": 2,
+    "explanation": ""
+  },
+  {
+    "id": 6,
+    "section": "臨濟",
+    "question": "臨濟家風為何？",
+    "options": [],
+    "explanation": ""
+  },
+  {
+    "id": 7,
+    "section": "雲門",
+    "question": "馬祖道一禪師常以「平常心是道」指示學人",
+    "options": [],
+    "explanation": ""
+  },
+  {
+    "id": 8,
+    "section": "法眼",
+    "question": "問黃檗禪師三次，三次被打的祖師？",
+    "options": [
+      "1石霜楚圓",
+      "2黃龍慧南",
+      "3臨濟義玄",
+      "4仰山慧寂"
+    ],
+    "explanation": ""
+  },
+  {
+    "id": 9,
+    "section": "曹洞",
+    "question": "臨濟宗風以「機鋒峭峻、棒喝交馳」聞名？",
+    "options": [
+      "否",
+      "是"
+    ],
+    "explanation": ""
+  }
+]
