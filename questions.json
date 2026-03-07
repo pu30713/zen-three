@@ -31,7 +31,7 @@
       "3溈仰宗之名源自溈山臨佑和仰山慧寂",
       "4禪宗學人始有道場源自馬祖道一禪師"
     ],
-    "answer": 0,
+    "answer": 1,
     "explanation": "中台廣傳期起始是從虛雲老和尚開始"
   },
   {
@@ -47,7 +47,7 @@
   },
   {
     "id": 5,
-    "section": "臨濟",
+    "section": "法脈",
     "question": "臨濟義玄禪師師承？",
     "options": [
       "1大梅法常",
@@ -60,21 +60,18 @@
   },
   {
     "id": 6,
-    "section": "臨濟",
-    "question": "臨濟家風為何？",
-    "options": [],
+    "section": "法脈",
+    "question": "馬祖道一禪師常以「平常心是道」指示學人",
+    "options": [
+      "是",
+      "否"
+    ],
+    "answer": 0,
     "explanation": ""
   },
   {
     "id": 7,
-    "section": "雲門",
-    "question": "馬祖道一禪師常以「平常心是道」指示學人",
-    "options": [],
-    "explanation": ""
-  },
-  {
-    "id": 8,
-    "section": "法眼",
+    "section": "法脈",
     "question": "問黃檗禪師三次，三次被打的祖師？",
     "options": [
       "1石霜楚圓",
@@ -82,16 +79,31 @@
       "3臨濟義玄",
       "4仰山慧寂"
     ],
+    "answer": 2,
     "explanation": ""
   },
   {
-    "id": 9,
-    "section": "曹洞",
+    "id": 8,
+    "section": "法脈",
     "question": "臨濟宗風以「機鋒峭峻、棒喝交馳」聞名？",
     "options": [
       "否",
       "是"
     ],
+    "answer": 1,
+    "explanation": ""
+  },
+  {
+    "id": 9,
+    "section": "法脈",
+    "question": "曹溪普傳期的傳法對象，下列何者為是？",
+    "options": [
+      "1出家眾為輔",
+      "2在家眾為主",
+      "3只傳出家眾",
+      "4以上皆非"
+    ],
+    "answer": 3,
     "explanation": ""
   }
 ]
