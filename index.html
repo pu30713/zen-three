@@ -4,7 +4,7 @@
   <base target="_top">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>金剛經刷題小程序</title>
+  <title>禪宗法脈刷題小程序</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@700&display=swap" rel="stylesheet">
 
   <style>
@@ -170,7 +170,7 @@
   <div class="cert-card">
     <div class="cert-title">圓滿獎勵</div>
     <div class="cert-unit" id="cert-unit-text"></div>
-    <div style="font-size:14px; color:#666;">恭喜學員</div>
+    <div style="font-size:14px; color:#666;">恭喜學僧</div>
     <div class="cert-name" id="cert-name-text"></div>
     <div class="cert-id" id="cert-id-text"></div>
     <div class="cert-stamp">功德<br>圓滿</div>
@@ -182,15 +182,14 @@
 
 <div id="login-page" class="page active" style="overflow-y:auto; height:100%;">
   <div style="height:40px;"></div>
-  <div class="app-title">金剛經<br>刷題小程序</div>
+  <div class="app-title">禪宗法脈<br>刷題小程序</div>
   <select id="user-class">
     <option value="" disabled selected>請選擇班級</option>
-    <option value="太谷一班">太谷一班</option>
-    <option value="佛寶一班">佛寶一班</option>
+    <option value="大三">大三</option>
     <option value="教授師">教授師</option>
   </select>
-  <input type="text" id="user-id" placeholder="請輸入學號 (必填)">
-  <input type="text" id="user-name" placeholder="請輸入姓名/法名">
+  <input type="text" id="user-id" placeholder="請輸入衣編 (必填)">
+  <input type="text" id="user-name" placeholder="請輸入法名（二字）">
   <button id="login-btn" class="btn-main sans-font" onclick="login()">開始精進</button>
   <div id="loading-msg" style="margin-top:20px; color:#999; font-size:16px;">正在載入題庫...</div>
 </div>
@@ -285,8 +284,7 @@
   let currentUnitName = ""; 
 
   const UNIT_NAMES = [
-    "01 總說", "02 釋經題及譯者", "03 法會因由分第一", "04 善現啟請分第二",
-    "05 大乘正宗分第三", "06 妙行無住分第四", "07 如理實見分第五", "08 正信希有分第六"
+    "01 是非題", "02 選擇題"
   ];
 
   window.onload = function(){
@@ -302,7 +300,7 @@
   function login(){
     const uClass = el.userClass.value; const uId = el.userId.value.trim(); const uNameInput = el.userName.value.trim();
     if(!uClass){ showModal("請選擇班級"); return; }
-    if(!uId){ showModal("請輸入學號"); return; }
+    if(!uId){ showModal("請輸入衣編"); return; }
     
     const originalText = el.loginBtn.innerText; el.loginBtn.innerText="驗證中..."; el.loginBtn.disabled=true;
 
@@ -310,12 +308,12 @@
       el.loginBtn.innerText = originalText; el.loginBtn.disabled=false;
       if(res && res.error){ showModal(res.error); return; }
       if(res && res.valid){
-        const finalName = res.name || uNameInput || "學員";
+        const finalName = res.name || uNameInput || "學僧";
         userInfo = { class: uClass, name: finalName, id: uId };
         localStorage.setItem('u_class', uClass); localStorage.setItem('u_name', finalName); localStorage.setItem('u_id', uId);
         renderMenu();
         switchPage('menu-page');
-      }else{ showModal("找不到學號「" + uId + "」，請確認輸入是否正確。"); }
+      }else{ showModal("找不到衣編「" + uId + "」，請確認輸入是否正確。"); }
     }).withFailureHandler(err=>{
       el.loginBtn.innerText = originalText; el.loginBtn.disabled=false; showModal("連線錯誤："+err);
     }).verifyStudentId(uId);
@@ -443,7 +441,7 @@
   function showCert(unitName) {
     el.certUnitText.innerText = unitName;
     el.certNameText.innerText = userInfo.name;
-    el.certIdText.innerText = "學號：" + userInfo.id;
+    el.certIdText.innerText = "衣編：" + userInfo.id;
     el.certOverlay.style.display = 'flex';
   }
   function closeCert() { el.certOverlay.style.display = 'none'; }
@@ -454,4 +452,5 @@
 
 </body>
 </html>
+
 
