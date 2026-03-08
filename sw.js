@@ -4,14 +4,14 @@
 // - index.html / questions.json：network-first（優先連線，失敗才用快取）
 // - 其他靜態資源：cache-first（優先快取）
 
-// Code.gs - 金剛經刷題小程序 (最終完美版)
+// Code.gs – 禪宗法脈刷題小程序 (最終完美版)
 const SHEET_QUESTIONS = "題庫";
-const SHEET_STUDENTS = "學員名單";
+const SHEET_STUDENTS = "學僧名單";
 
 function doGet() {
   return HtmlService.createTemplateFromFile('Index')
     .evaluate()
-    .setTitle('金剛經刷題小程序')
+    .setTitle('禪宗法脈刷題小程序')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
@@ -59,9 +59,8 @@ function getQuestionData() {
 }
 
 function getProgressSheetName(userClass) {
-  if (userClass === "太谷一班") return "學員進度_太谷";
-  if (userClass === "佛寶一班") return "學員進度_佛寶";
-  return "學員進度_其他"; 
+  if (userClass === "大三") return "學僧進度_大三";
+  return "學僧進度_其他"; 
 }
 
 function saveUserProgress(studentId, name, unitIndex, score, userClass) {
@@ -76,7 +75,7 @@ function saveUserProgress(studentId, name, unitIndex, score, userClass) {
       
       if (!sheet) {
         sheet = ss.insertSheet(sheetName);
-        sheet.appendRow(["時間", "班級", "學號", "法名", "單元索引", "分數"]);
+        sheet.appendRow(["時間", "班級", "衣編", "法名", "單元索引", "分數"]);
       }
 
       let taiwanTime = Utilities.formatDate(new Date(), "Asia/Taipei", "yyyy/MM/dd HH:mm:ss");
@@ -129,13 +128,13 @@ function getStudentProgress(studentId, userClass) {
 function verifyStudentId(studentId) {
   const inputId = String(studentId).trim().toLowerCase();
   // 保留測試用帳號
-  if (inputId === "b0636" || inputId === "b0763") {
+  if (inputId === "b1195" || inputId === "b0000") {
      return { valid: true, className: "教授師", name: "教授師" };
   }
 
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet = ss.getSheetByName(SHEET_STUDENTS);
-  if (!sheet) return { valid: false, error: "系統找不到「學員名單」分頁" };
+  if (!sheet) return { valid: false, error: "系統找不到「學僧名單」分頁" };
 
   const data = sheet.getDataRange().getValues();
   for (let i = 1; i < data.length; i++) {
@@ -143,5 +142,8 @@ function verifyStudentId(studentId) {
       return { valid: true, className: data[i][0], name: data[i][2] };
     }
   }
+  return { valid: false };
+}
+
   return { valid: false };
 }
