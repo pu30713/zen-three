@@ -1,409 +1,457 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html>
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<meta http-equiv="Pragma" content="no-cache" />
-<meta http-equiv="Expires" content="0" />
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>金剛經刷題小程序</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@700&display=swap" rel="stylesheet">
 
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#fff">
+  <style>
+    :root {
+      --main-color-light: #D4AF37;
+      --main-color-dark: #8B6914;
+      --accent-yellow: #FFF8DC;
+      --bg-color: #F9F9F7;
+      --text-dark: #4A4A4A;
+      --wrong-bg: #F9EBEB;
+      --wrong-color: #D9534F;
+    }
 
-<title>線上刷題小程序</title>
-<style>
-:root{--bg:#f6f7fb;--card:#fff;--ink:#0f172a;--muted:#64748b;--brand:#3b82f6;--ok:#16a34a;--bad:#ef4444;--line:#e5e7eb}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+    body {
+      font-family: 'Noto Serif TC', serif;
+      background-color: var(--bg-color);
+      color: var(--text-dark);
+      margin: 0;
+      padding: 10px; 
+      text-align: center;
+      line-height: 1.4;
+      font-size: 18px;
+      display: flex;
+      flex-direction: column;
+      height: 100vh; 
+      box-sizing: border-box;
+      overflow: hidden; 
+    }
 
-/* 1. 基礎字體 18px */
-body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,"Noto Sans TC",sans-serif;background:var(--bg);color:var(--ink); font-size: 18px;}
+    @media screen and (min-width: 768px) {
+      body { max-width: 900px; margin: 0 auto; height: auto; overflow: auto; padding: 24px 20px; display: block; }
+      #unit-list { height: auto !important; grid-template-rows: auto !important; }
+      .unit-card { min-height: 140px !important; }
+    }
 
-/* 離螢幕頂端 24px */
-.wrap{max-width:1000px;margin:24px auto;padding:0 12px}
+    input, select, button { box-sizing: border-box; outline: none; }
+    .sans-font { font-family: 'Noto Sans TC', sans-serif; }
 
-/* 卡片內距：上15px / 下10px */
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 10px 30px rgba(15,23,42,.06);padding:15px 16px 10px 16px; position: relative;}
+    /* 按鈕樣式 */
+    .btn-main {
+      background-color: var(--main-color-dark); color: #fff; border: none; padding: 14px;
+      font-size: 20px; border-radius: 50px; cursor: pointer; width: 100%;
+      max-width: 350px; margin: 20px auto; display: block;
+      box-shadow: 0 4px 8px rgba(139, 105, 20, 0.3);
+    }
+    
+    /* 副按鈕 */
+    .btn-sub {
+      background-color: transparent; border: 2px solid var(--main-color-dark); color: var(--main-color-dark);
+      padding: 10px; font-size: 18px; border-radius: 50px; cursor: pointer; width: 100%;
+      max-width: 350px; margin: 0 auto; display: block; font-weight: bold;
+      background: #fff;
+    }
 
-/* 標題與標題列的刷新按鈕 */
-.title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-h1{margin:0;font-size:28px; line-height: 1.2;}
-.sub{color:var(--muted);font-size:14px; font-weight: normal;}
+    /* 登入頁 */
+    .app-title { font-size: 32px; color: var(--main-color-dark); font-weight: bold; margin: 20px 0 30px; letter-spacing: 2px; }
+    input, select {
+      font-family: 'Noto Sans TC'; font-size: 20px; padding: 12px; width: 100%;
+      max-width: 350px; margin: 10px auto; border: 1px solid #ccc; border-radius: 10px; display: block; background: #fff;
+    }
 
-/* ✅ 新增：標題旁的重新整理按鈕 */
-.btn-reload {
-  background: #f1f5f9; border: 1px solid var(--line); color: var(--muted);
-  width: 36px; height: 36px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 20px; cursor: pointer; transition: 0.2s;
-}
-.btn-reload:active { background: #e2e8f0; transform: rotate(180deg); }
+    /* 頁面切換 */
+    .page { display: none; width: 100%; }
+    .page.active { display: block; }
 
-/* 行間距 */
-.row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+    /* 選單頁 (Menu) */
+    #menu-page { height: 100%; flex-direction: column; }
+    #menu-page.active { display: flex; }
 
-/* 2. 元件樣式 */
-button,select,input[type="text"]{border:1px solid var(--line);border-radius:10px;padding:8px 12px;background:#fff;color:var(--ink);font-size:18px;cursor:pointer; appearance: none; -webkit-appearance: none;}
-input[type="text"]{cursor:text; width: 240px;}
-/* 修正 iOS 下拉選單箭頭消失問題 */
-select {
-  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  background-size: 12px;
-  padding-right: 30px;
-}
+    #unit-list {
+      display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(4, 1fr); 
+      gap: 12px; margin: 10px auto; width: 100%; max-width: 600px; height: 100%; 
+      padding-bottom: 5px; box-sizing: border-box; flex-grow: 1;
+    }
 
-.btn.brand{background:var(--brand);border-color:var(--brand);color:#fff}.btn.ghost{background:#fff}
+    .unit-card {
+      background: #fff; border-radius: 12px; overflow: hidden; cursor: pointer;
+      display: flex; flex-direction: column; box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+      transition: all 0.1s; border: 1px solid #E0E0E0; height: 100%; 
+    }
+    .unit-card:active { transform: scale(0.97); }
 
-/* 統計標籤 */
-.badge{background:#f1f5f9;border:1px solid var(--line);border-radius:12px;padding:6px 10px;font-size:18px;}
+    .unit-head { background: linear-gradient(135deg, #E6C75A, #D4AF37); flex: 1; display: flex; align-items: center; justify-content: center; }
+    .unit-no { font-family: 'Noto Sans TC', sans-serif; font-weight: 700; font-size: 36px; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.2); line-height: 1; }
+    .unit-body { background: #fff; flex: 1; display: flex; align-items: center; justify-content: center; padding: 5px; }
+    .unit-text { font-family: 'Noto Sans TC', sans-serif; font-size: 24px; color: #333; font-weight: 700; line-height: 1.2; overflow: hidden; }
 
-/* 分隔線 */
-.hr{height:1px;background:var(--line);margin:10px 0}
+    /* 答題頁 */
+    #quiz-page.active { display: block; overflow-y: auto; height: 100%; padding-bottom: 50px; }
+    .quiz-card { background: #fff; border-radius: 16px; padding: 20px; margin: 10px auto; max-width: 600px; box-shadow: 0 3px 12px rgba(0,0,0,0.06); text-align: left; }
+    .option-btn {
+      display: block; width: 100%; padding: 16px; margin: 12px 0; font-size: 19px; text-align: left;
+      background: #FAFAFA; border: 1px solid #ddd; border-radius: 10px; cursor: pointer; color: var(--text-dark); line-height: 1.4;
+    }
+    .option-btn.correct { background: #E6F4EA; border-color: #34A853; color: #1E8E3E; font-weight: bold; }
+    .option-btn.wrong { background: var(--wrong-bg); border-color: var(--wrong-color); }
+    #feedback-area { display: none; margin-top: 25px; padding: 18px; background: #FFF8E1; border-radius: 12px; border: 1px solid #FFE082; text-align: left; }
+    .back-btn { background:none; border:none; font-size:28px; color:#888; cursor:pointer; float:left; padding: 0 10px; }
 
-/* 3. 題目與選項 */
-.question{font-size:25px; line-height:1.4; margin:10px 0 12px; font-weight: normal; color: var(--ink);}
-.opt{display:flex;align-items:flex-start;gap:10px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:4px 0;font-size:21px;background:#fff;cursor:pointer}
-.opt:hover{background:#f8fafc}
-.opt.correct{border-color:var(--ok);background:#f0fdf4}.opt.wrong{border-color:var(--bad);background:#fef2f2}
-.opt input { width: 21px; height: 21px; margin-top: 5px; cursor: pointer; flex-shrink: 0; }
+    /* 精進紀錄頁 */
+    #record-page.active { display: block; overflow-y: auto; height: 100%; }
+    .record-header { 
+      background: #FEEFB3; color: #8B6914; padding: 20px; border-radius: 12px; margin-bottom: 20px; 
+      border: 1px solid #FDE073; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .record-list { background: #fff; border-radius: 12px; padding: 10px 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    .record-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee; font-size: 20px; }
+    .record-item:last-child { border-bottom: none; }
+    .record-title { font-weight: bold; color: #333; }
+    .record-count { font-family: 'Noto Sans TC'; color: #888; font-weight: 500; }
+    .record-count.done { color: #E6C75A; font-weight: bold; } 
 
-.feedback{margin-top:10px;border:1px solid var(--line);border-radius:12px;padding:12px;font-size:18px;background:#f8fafc}
-.feedback.ok{color:var(--ok)}.feedback.bad{color:var(--bad)}
+    /* 圓滿卡彈窗 */
+    #cert-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 10000; }
+    .cert-card {
+      width: 90%; max-width: 380px; 
+      background: radial-gradient(circle, #FFFAF0 0%, #FFF8DC 100%);
+      border: 4px solid #D4AF37; border-radius: 16px;
+      padding: 30px 20px; text-align: center;
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+      position: relative;
+      animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes popIn { from{transform: scale(0.5); opacity:0;} to{transform: scale(1); opacity:1;} }
+    
+    .cert-title { font-size: 28px; color: #8B6914; margin-bottom: 10px; font-weight: bold; letter-spacing: 2px; }
+    .cert-unit { font-size: 22px; color: #333; margin-bottom: 20px; font-weight: bold; border-bottom: 2px solid #D4AF37; display: inline-block; padding-bottom: 5px; }
+    .cert-name { font-size: 32px; font-family: 'Noto Serif TC', serif; color: #4A4A4A; margin: 15px 0; }
+    .cert-id { font-size: 16px; color: #888; font-family: 'Noto Sans TC'; margin-bottom: 20px; }
+    .cert-stamp { 
+      width: 80px; height: 80px; border: 3px solid #D9534F; color: #D9534F; border-radius: 50%; 
+      display: flex; align-items: center; justify-content: center; margin: 0 auto; 
+      font-size: 20px; font-weight: bold; transform: rotate(-15deg); opacity: 0.8;
+    }
 
-.nav{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-.chips{display:flex;gap:8px;flex-wrap:wrap}
-.chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--line);background:#eef2ff;border-radius:999px;font-size:18px;cursor:pointer}
-.chip input{width:18px;height:18px;cursor:pointer}
+    /* Modal */
+    .modal-overlay{ position: fixed; inset: 0; background: rgba(0,0,0,.35); display: none; align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
+    .modal{ width: 100%; max-width: 340px; background: #fff; border-radius: 14px; padding: 24px; text-align: left; box-shadow: 0 10px 30px rgba(0,0,0,0.25); }
+    .modal-title{ font-weight: 700; color: var(--main-color-dark); font-size: 20px; margin-bottom: 12px; }
+    .modal-msg{ font-size: 18px; color: #333; margin-bottom: 24px; white-space: pre-wrap; line-height: 1.5; }
+    .modal-actions{ text-align: right; }
+    .modal-btn{ border: none; padding: 10px 24px; border-radius: 24px; font-size: 16px; cursor: pointer; margin-left: 10px;}
+    .modal-btn.cancel{ background: #f0f0f0; color: #666; }
+    .modal-btn.ok{ background: var(--main-color-dark); color: #fff; }
 
-.report{margin-top:12px;border:1px solid var(--line);background:#fff;border-radius:14px;padding:14px}
-.hidden{display:none}
-
-/* 排版輔助 */
-.control-group { display: flex; gap: 8px; align-items: center; }
-.ctrl-item { display: flex; align-items: center; gap: 6px; }
-.btn-group { display: flex; gap: 8px; } 
-
-/* 4. 手機版專屬設定 */
-@media(max-width:600px){
-  h1{font-size:26px}
-  .question{font-size:24px}
-  .opt{font-size:20px}
-  
-  input[type="text"]{width:100%; font-size: 18px;}
-  select { font-size: 18px; }
-  
-  .stats-row {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 4px; 
-    width: 100%;
-  }
-  .stats-row .badge {
-    font-size: 15px;
-    padding: 6px 2px;
-    text-align: center;
-    margin: 0;
-    white-space: nowrap;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .control-group { width: 100%; display: flex; justify-content: space-between; gap: 6px; }
-  .ctrl-item { flex: 1; flex-direction: row; align-items: center; justify-content: flex-start; }
-  .ctrl-item label { font-size: 15px; white-space: nowrap; }
-  .ctrl-item select { width: 100%; }
-
-  .btn-group { width: 100%; margin-top: 6px; gap: 6px; }
-  .s-start, .s-reset, .s-finish { padding: 10px 2px; font-size: 17px; flex: 1; white-space: nowrap; }
-  .s-finish { flex: 1.2; letter-spacing: -0.5px; }
-}
-</style>
+  </style>
 </head>
+
 <body>
-<div class="wrap">
-  <div class="card">
-    <div class="title-row">
-      <h1>線上刷題小程序 <span class="sub">— 雲端版</span></h1>
-      <button class="btn-reload" onclick="forceReload()" title="檢查更新">↻</button>
+
+<div id="modal-overlay" class="modal-overlay">
+  <div class="modal">
+    <div id="modal-title" class="modal-title">提示</div>
+    <div id="modal-msg" class="modal-msg"></div>
+    <div class="modal-actions">
+      <button id="modal-cancel" class="modal-btn cancel" style="display:none;">取消</button>
+      <button id="modal-ok" class="modal-btn ok">確定</button>
     </div>
   </div>
-  <div class="card" id="panel-student">載入題庫中...</div>
+</div>
+
+<div id="cert-overlay">
+  <div class="cert-card">
+    <div class="cert-title">圓滿獎勵</div>
+    <div class="cert-unit" id="cert-unit-text"></div>
+    <div style="font-size:14px; color:#666;">恭喜學員</div>
+    <div class="cert-name" id="cert-name-text"></div>
+    <div class="cert-id" id="cert-id-text"></div>
+    <div class="cert-stamp">功德<br>圓滿</div>
+    <div style="margin-top:20px;">
+      <button class="btn-main" style="width:150px; padding:10px; font-size:16px; margin:0 auto;" onclick="closeCert()">收下獎勵</button>
+    </div>
+  </div>
+</div>
+
+<div id="login-page" class="page active" style="overflow-y:auto; height:100%;">
+  <div style="height:40px;"></div>
+  <div class="app-title">金剛經<br>刷題小程序</div>
+  <select id="user-class">
+    <option value="" disabled selected>請選擇班級</option>
+    <option value="太谷一班">太谷一班</option>
+    <option value="佛寶一班">佛寶一班</option>
+    <option value="教授師">教授師</option>
+  </select>
+  <input type="text" id="user-id" placeholder="請輸入學號 (必填)">
+  <input type="text" id="user-name" placeholder="請輸入姓名/法名">
+  <button id="login-btn" class="btn-main sans-font" onclick="login()">開始精進</button>
+  <div id="loading-msg" style="margin-top:20px; color:#999; font-size:16px;">正在載入題庫...</div>
+</div>
+
+<div id="menu-page" class="page">
+  <div style="padding: 15px 10px 5px 10px;">
+    <button class="btn-sub" onclick="loadMyProgress()">📊 查看精進紀錄</button>
+  </div>
+  
+  <div id="unit-list"></div>
+  
+  <div style="padding: 10px;">
+    <button class="btn-sub" onclick="endPractice()" style="border:1px solid #ccc; color:#888; font-size:16px;">結束練習</button>
+  </div>
+</div>
+
+<div id="record-page" class="page">
+  <div style="display:flex; align-items:center; margin-bottom:15px;">
+    <button class="back-btn" onclick="switchPage('menu-page')">←</button>
+    <div style="flex-grow:1; text-align:center; font-weight:bold; font-size:22px; color:#555;">精進紀錄表</div>
+    <div style="width:40px;"></div>
+  </div>
+  
+  <div class="record-header">
+    <div style="font-size:20px; font-weight:bold; margin-bottom:5px;">目標：</div>
+    <div>每個單元圓滿 2 次<br>可獲得圓滿獎勵</div>
+  </div>
+
+  <div class="record-list" id="record-list-container">
+    <div style="text-align:center; padding:20px; color:#999;">載入中...</div>
+  </div>
+</div>
+
+<div id="quiz-page" class="page">
+  <div style="display:flex; align-items:center; margin-bottom:15px; padding-top:10px;">
+    <button class="back-btn" onclick="confirmHome()">←</button>
+    <div style="flex-grow:1; text-align:center; font-weight:bold; color:var(--main-color-dark); font-size:20px;" id="quiz-unit-tag"></div>
+    <div style="width:40px;"></div>
+  </div>
+  <div style="text-align:right; color:#888; font-size:14px; margin-right:5px; margin-bottom: 5px;">
+    <span id="q-progress"></span>
+  </div>
+  <div class="quiz-card">
+    <div id="question-text" class="sans-font" style="font-size:22px; font-weight:bold; margin-bottom:20px; line-height:1.5;"></div>
+    <div id="options-container" class="sans-font"></div>
+  </div>
+  <div id="feedback-area" class="sans-font">
+    <div id="result-title" style="font-weight:bold; font-size:20px; margin-bottom:10px;"></div>
+    <div id="correct-ans" style="color:#1E8E3E; margin-bottom:10px; font-size:18px;"></div>
+    <div id="explain-text" style="line-height:1.6; color:#555; font-size:18px;"></div>
+    <div style="text-align:right; margin-top:20px;">
+      <button class="btn-main" style="width:auto; padding:10px 30px; margin:0; font-size:18px;" onclick="nextQuestion()">下一題</button>
+    </div>
+  </div>
 </div>
 
 <script>
-const $ = s => document.querySelector(s);
-const isArray = Array.isArray;
-function normalize(a){ if(a==null) return []; return isArray(a)? [...a].sort((x,y)=>x-y) : [a]; }
-function same(a,b){ a=normalize(a); b=normalize(b); return a.length===b.length && a.every((v,i)=>v===b[i]); }
-function shuffle(arr){ return arr.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]); }
-
-// ✅ 強制刷新函式
-function forceReload() {
-  if(confirm("確定要重新整理並檢查更新嗎？\n(將會清除當前作答進度)")) {
-    // 強制從伺服器抓取，不使用快取
-    window.location.reload(true);
-  }
-}
-
-let BANK = [];
-
-async function init(){
-  try {
-    const r = await fetch('questions.json?t=' + new Date().getTime(), { cache: 'no-store' });
-    if(!r.ok) throw new Error('讀取失敗');
-    BANK = await r.json();
-    mountStudent('#panel-student');
-  } catch(e) {
-    $('#panel-student').innerHTML = `<p style="color:red">無法讀取題庫，請確認 questions.json 是否已上傳。</p>`;
-  }
-}
-
-function mountStudent(selector){
-  const el = $(selector);
-  
-  el.innerHTML=`
-    <div class="row stats-row">
-      <div class="badge"><b class="s-total">${BANK.length}</b> 題</div>
-      <div class="badge">目前 <b class="s-progress">0/0</b></div>
-      <div class="badge">答對 <b class="s-right">0</b></div>
-    </div>
-    
-    <div class="hr"></div>
-
-    <div class="row">
-      <div style="font-size:18px;font-weight:bold">1. 選擇章節：</div>
-      <div class="chips s-sections"></div>
-    </div>
-
-    <div class="row" style="margin-top:8px">
-      <div style="font-size:18px;font-weight:bold">2. 關鍵字搜尋：</div>
-      <input type="text" class="s-keyword" placeholder="輸入關鍵字 (題目或選項)...">
-    </div>
-
-    <div class="hr"></div>
-
-    <div class="row" style="flex-direction: column; align-items: stretch; gap: 8px;">
-      
-      <div class="control-group">
-        <div class="ctrl-item">
-          <label>模式</label>
-          <select class="s-mode"><option value="order">依順序</option><option value="shuffle">隨機</option></select>
-        </div>
-        <div class="ctrl-item">
-          <label>題數</label>
-          <select class="s-count">
-            <option value="all" selected>全部</option>
-            <option value="10">10</option>
-            <option value="20">20</option>
-            <option value="50">50</option>
-          </select>
-        </div>
-      </div>
-      
-      <div class="btn-group">
-        <button class="btn brand s-start">開始作答</button>
-        <button class="btn ghost s-reset">重置</button>
-        <button class="btn ghost s-finish" disabled>完成並看成績</button>
-      </div>
-
-    </div>
-
-    <div class="hr"></div>
-    <div class="question s-q">請選擇條件後，按「開始作答」</div>
-    <div class="s-optBox"></div>
-    
-    <div class="feedback s-fb hidden">
-      <div class="s-fbTitle" style="font-weight:bold"></div>
-      <div class="s-fbAns"></div>
-      <div class="s-fbExp"></div>
-    </div>
-    
-    <div class="nav hidden s-nav">
-      <button class="btn s-prev">← 上一題</button>
-      <button class="btn s-next">下一題 →</button>
-    </div>
-    <div class="report hidden s-report"></div>
-  `;
-  
-  const state = {paper:[], idx:0, right:0, user:{}, revealed:{}, firstScored:{}};
-  el._state = state;
-  
-  const secs = [...new Set(BANK.map(q => q.section||'未分類'))];
-  el.querySelector('.s-sections').innerHTML = secs.map(s => `
-    <label class="chip"><input type="checkbox" value="${s}" checked> ${s}</label>
-  `).join('');
-
-  el.querySelector('.s-start').onclick = () => start(el);
-  el.querySelector('.s-reset').onclick = () => mountStudent(selector); 
-  el.querySelector('.s-prev').onclick = () => { if(state.idx>0){ state.idx--; render(el); } };
-  el.querySelector('.s-next').onclick = () => { 
-    if(state.idx < state.paper.length-1){ state.idx++; render(el); }
-    else { showReport(el); }
+  const el = {
+    modalOverlay: document.getElementById('modal-overlay'),
+    modalTitle: document.getElementById('modal-title'), modalMsg: document.getElementById('modal-msg'),
+    modalOk: document.getElementById('modal-ok'), modalCancel: document.getElementById('modal-cancel'),
+    loginBtn: document.getElementById('login-btn'), loadingMsg: document.getElementById('loading-msg'),
+    userClass: document.getElementById('user-class'), userId: document.getElementById('user-id'), userName: document.getElementById('user-name'),
+    unitList: document.getElementById('unit-list'), 
+    recordListContainer: document.getElementById('record-list-container'),
+    quizUnitTag: document.getElementById('quiz-unit-tag'), qProgress: document.getElementById('q-progress'),
+    questionText: document.getElementById('question-text'), optionsContainer: document.getElementById('options-container'),
+    feedbackArea: document.getElementById('feedback-area'), resultTitle: document.getElementById('result-title'),
+    correctAns: document.getElementById('correct-ans'), explainText: document.getElementById('explain-text'),
+    // 圓滿卡
+    certOverlay: document.getElementById('cert-overlay'), certUnitText: document.getElementById('cert-unit-text'),
+    certNameText: document.getElementById('cert-name-text'), certIdText: document.getElementById('cert-id-text')
   };
-  el.querySelector('.s-finish').onclick = () => showReport(el);
-}
 
-function start(root){
-  const st = root._state;
-  const mode = root.querySelector('.s-mode').value;
-  const wantStr = root.querySelector('.s-count').value;
-  const keyword = root.querySelector('.s-keyword').value.trim().toLowerCase(); 
-  const chosen = [...root.querySelectorAll('.s-sections input:checked')].map(i=>i.value);
-  
-  if(!chosen.length) return alert('請至少勾選一個章節');
-  
-  let pool = BANK.map((q,i)=>({q,i})).filter(x => chosen.includes(x.q.section||'未分類'));
-
-  // 搜尋邏輯：題目 + 選項 (不含解析)
-  if(keyword) {
-    pool = pool.filter(item => {
-      const qText = (item.q.question || "").toLowerCase();
-      const optsText = (item.q.options || []).join(" ").toLowerCase();
-      return qText.includes(keyword) || optsText.includes(keyword);
-    });
+  function showModal(message, title="提示"){
+    el.modalTitle.innerText = title; el.modalMsg.innerText = message;
+    el.modalCancel.style.display = "none"; el.modalOk.onclick = ()=> el.modalOverlay.style.display="none";
+    el.modalOverlay.style.display="flex";
+  }
+  function showConfirm(message, onYes, title="確認"){
+    el.modalTitle.innerText = title; el.modalMsg.innerText = message;
+    el.modalCancel.style.display="inline-block"; el.modalCancel.onclick = ()=> el.modalOverlay.style.display="none";
+    el.modalOk.onclick = ()=>{ el.modalOverlay.style.display="none"; onYes(); };
+    el.modalOverlay.style.display="flex";
   }
 
-  const poolIdx = pool.map(x=>x.i);
+  let allQuestions = [];
+  let currentQuestions = [];
+  let currentQIndex = 0;
+  let score = 0;
+  let userInfo = {};
+  let currentUnitName = ""; 
 
-  if(!poolIdx.length) {
-    if(keyword) return alert(`在選定的章節中，找不到包含「${keyword}」的題目。`);
-    return alert('所選章節目前沒有題目');
-  }
-  
-  let list = (mode==='shuffle') ? shuffle(poolIdx) : poolIdx;
-  const want = (wantStr==='all') ? list.length : Math.min(parseInt(wantStr), list.length);
-  
-  st.paper = list.slice(0, want);
-  st.idx = 0; st.right = 0; st.user = {}; st.revealed = {}; st.firstScored = {};
-  
-  root.querySelector('.s-finish').disabled = false;
-  root.querySelector('.s-nav').classList.remove('hidden');
-  render(root);
-}
+  const UNIT_NAMES = [
+    "01 總說", "02 釋經題及譯者", "03 法會因由分第一", "04 善現啟請分第二",
+    "05 大乘正宗分第三", "06 妙行無住分第四", "07 如理實見分第五", "08 正信希有分第六"
+  ];
 
-function render(root){
-  const st = root._state;
-  const pi = st.paper[st.idx];
-  const q = BANK[pi];
-  
-  root.querySelector('.s-progress').textContent = `${st.idx+1}/${st.paper.length}`;
-  root.querySelector('.s-right').textContent = st.right;
-  root.querySelector('.s-q').textContent = q.question;
-  
-  const box = root.querySelector('.s-optBox');
-  box.innerHTML = '';
-  const correct = normalize(q.answer);
-  const isMulti = correct.length > 1;
-  const cur = normalize(st.user[pi]);
-  
-  (q.options||[]).forEach((opt, i) => {
-    const row = document.createElement('label'); 
-    row.className = 'opt';
-    const ip = document.createElement('input'); 
-    ip.type = isMulti ? 'checkbox' : 'radio';
-    ip.name = 'q_opt';
-    ip.checked = cur.includes(i);
-    
-    row.onclick = (e) => {
-      if(e.target !== ip) ip.checked = !ip.checked;
-      
-      let now = new Set(normalize(st.user[pi]));
-      if(isMulti){
-        if(ip.checked) now.add(i); else now.delete(i);
-      } else {
-        now = new Set([i]);
-        box.querySelectorAll('input').forEach((inp, idx) => { if(idx!==i) inp.checked=false; });
-      }
-      st.user[pi] = [...now].sort((a,b)=>a-b);
-      
-      const uAns = st.user[pi];
-      const right = same(uAns, q.answer);
-      if(!isMulti || uAns.length >= correct.length){
-         st.revealed[pi] = true;
-         if(right && !st.firstScored[pi]){ st.right++; st.firstScored[pi]=true; }
-         refreshUI(root, q, pi);
-      }
-    };
-    row.append(ip, document.createTextNode(" " + opt));
-    box.append(row);
-  });
-  
-  refreshUI(root, q, pi);
-}
-
-function refreshUI(root, q, pi){
-  const st = root._state;
-  const isRev = st.revealed[pi];
-  const uAns = normalize(st.user[pi]);
-  const correct = normalize(q.answer);
-  const ok = same(uAns, q.answer);
-  
-  const fb = root.querySelector('.s-fb');
-  if(isRev){
-    fb.classList.remove('hidden');
-    fb.className = `feedback s-fb ${ok?'ok':'bad'}`;
-    
-    root.querySelector('.s-fbTitle').textContent = ok ? '答對了 ✅' : '答錯了 ❌';
-    
-    const ansText = correct.map(i => (q.options && q.options[i]) ? q.options[i] : ['A','B','C','D'][i]).join(', ');
-    root.querySelector('.s-fbAns').textContent = '正確答案：' + ansText;
-    
-    root.querySelector('.s-fbExp').textContent = q.explanation ? '解析：' + q.explanation : '';
-    
-    root.querySelectorAll('.opt').forEach((row, i) => {
-      row.classList.remove('correct','wrong');
-      if(correct.includes(i)) row.classList.add('correct');
-      else if(uAns.includes(i)) row.classList.add('wrong');
-    });
-  } else {
-    fb.classList.add('hidden');
-  }
-}
-
-function showReport(root){
-  const st = root._state;
-  const box = root.querySelector('.s-report');
-  box.classList.remove('hidden');
-  const wrongList = st.paper.filter(pi => !same(st.user[pi], BANK[pi].answer));
-  
-  box.innerHTML = `
-    <h2 style="color:#3b82f6; margin-top:0">本次練習已完成</h2>
-    <div style="margin-bottom:15px; font-size:18px;">
-       <span class="chip">答對：${st.right} / ${st.paper.length}</span>
-       <span class="chip">正確率：${st.paper.length > 0 ? Math.round(st.right/st.paper.length*100) : 0}%</span>
-    </div>
-    ${wrongList.length===0 ? '<p style="font-size:20px; color:#16a34a">全對！太棒了 🎉</p>' : 
-      `<details open><summary>錯題清單 (${wrongList.length})</summary>
-       <ul>${wrongList.map(pi => {
-         const q = BANK[pi];
-         const ansText = normalize(q.answer).map(i => (q.options && q.options[i]) ? q.options[i] : ['A','B','C','D'][i]).join(', ');
-         return `<li>
-            <b>${q.question}</b><br>
-            <span style="color:#16a34a">正解：${ansText}</span><br>
-            <span class="sub">解析：${q.explanation||'無'}</span>
-         </li>`;
-       }).join('')}</ul></details>`
+  window.onload = function(){
+    if(localStorage.getItem('u_name')){
+      el.userName.value = localStorage.getItem('u_name') || "";
+      el.userClass.value = localStorage.getItem('u_class') || "";
+      el.userId.value = localStorage.getItem('u_id') || "";
     }
-    <div style="margin-top:20px">
-       <button class="btn brand" onclick="mountStudent('#panel-student')">再練習一次</button>
-    </div>
-  `;
-  root.querySelector('.s-nav').classList.add('hidden');
-  root.querySelector('.s-optBox').innerHTML = '';
-  root.querySelector('.s-q').textContent = ''; 
-}
+    google.script.run.withSuccessHandler(data=>{ allQuestions = data || []; el.loadingMsg.style.display="none"; })
+      .withFailureHandler(err=>showModal("載入失敗："+err)).getQuestionData();
+  };
 
-init();
+  function login(){
+    const uClass = el.userClass.value; const uId = el.userId.value.trim(); const uNameInput = el.userName.value.trim();
+    if(!uClass){ showModal("請選擇班級"); return; }
+    if(!uId){ showModal("請輸入學號"); return; }
+    
+    const originalText = el.loginBtn.innerText; el.loginBtn.innerText="驗證中..."; el.loginBtn.disabled=true;
 
-// ✅ 註冊 Service Worker
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js')
-    .then(reg => console.log('SW registered!', reg))
-    .catch(err => console.log('SW failed', err));
-}
+    google.script.run.withSuccessHandler(res=>{
+      el.loginBtn.innerText = originalText; el.loginBtn.disabled=false;
+      if(res && res.error){ showModal(res.error); return; }
+      if(res && res.valid){
+        const finalName = res.name || uNameInput || "學員";
+        userInfo = { class: uClass, name: finalName, id: uId };
+        localStorage.setItem('u_class', uClass); localStorage.setItem('u_name', finalName); localStorage.setItem('u_id', uId);
+        renderMenu();
+        switchPage('menu-page');
+      }else{ showModal("找不到學號「" + uId + "」，請確認輸入是否正確。"); }
+    }).withFailureHandler(err=>{
+      el.loginBtn.innerText = originalText; el.loginBtn.disabled=false; showModal("連線錯誤："+err);
+    }).verifyStudentId(uId);
+  }
+
+  // 結束練習
+  function endPractice() {
+    switchPage('login-page');
+  }
+
+  function renderMenu(){
+    el.unitList.innerHTML="";
+    UNIT_NAMES.forEach((unit, idx)=>{
+      const m = String(unit).match(/^(\d{2})\s*(.*)$/);
+      const no = m ? m[1] : String(idx+1).padStart(2,"0");
+      const title = m ? (m[2] || unit) : unit;
+      const card = document.createElement("div");
+      card.className = "unit-card";
+      card.innerHTML = `<div class="unit-head"><div class="unit-no">${no}</div></div><div class="unit-body"><div class="unit-text">${title}</div></div>`;
+      card.onclick = () => startQuiz(unit);
+      el.unitList.appendChild(card);
+    });
+  }
+
+  function startQuiz(unitName){
+    currentUnitName = unitName;
+    currentQuestions = allQuestions.filter(q=>String(q.unit).includes(unitName));
+    if(currentQuestions.length===0){ showModal("此單元無題目"); return; }
+    currentQuestions.sort(()=>Math.random()-0.5);
+    currentQIndex=0; score=0;
+    switchPage('quiz-page');
+    el.quizUnitTag.innerText=unitName;
+    renderQuestion();
+  }
+
+  function renderQuestion(){
+    const q=currentQuestions[currentQIndex];
+    el.qProgress.innerText=`${currentQIndex+1}/${currentQuestions.length}`;
+    el.questionText.innerText=q.qText;
+    el.feedbackArea.style.display="none";
+    el.optionsContainer.innerHTML="";
+    q.options.forEach((opt,idx)=>{
+      const b=document.createElement("button"); b.className="option-btn";
+      b.innerText=(idx+1)+". "+opt; b.onclick=()=>checkAns(idx+1,q.ans,q.explain,b);
+      el.optionsContainer.appendChild(b);
+    });
+  }
+
+  // ★ 漂亮版 + 無敵判斷邏輯
+  function checkAns(sel, ans, exp, btn){
+    document.querySelectorAll('.option-btn').forEach(b=>b.disabled=true);
+    
+    // 轉字串、去空白
+    let s = String(sel).trim();
+    let a = String(ans).trim();
+
+    // 處理全形數字
+    a = a.replace(/[\uff10-\uff19]/g, m => String.fromCharCode(m.charCodeAt(0) - 0xfee0));
+    // 處理是非題
+    if(a==="非"||a==="否"||a==="X"||a==="❌") a="2";
+    if(a==="是"||a==="O"||a==="⭕") a="1";
+
+    const ok = (s == a);
+
+    if(ok){
+      btn.classList.add('correct');
+      score++;
+      el.resultTitle.innerText="⭕ 答對了";
+      el.resultTitle.style.color="#1E8E3E";
+    }else{
+      btn.classList.add('wrong');
+      el.resultTitle.innerText="❌ 答錯了";
+      el.resultTitle.style.color="#D9534F";
+      
+      const allBtns = document.querySelectorAll('.option-btn');
+      // 標記正確答案
+      if(!isNaN(a)){
+         const correctIdx = parseInt(a) - 1;
+         if(allBtns[correctIdx]) allBtns[correctIdx].classList.add('correct');
+      }
+    }
+
+    el.correctAns.innerText = ok ? "" : "正解：" + ans;
+    el.explainText.innerText = exp || "無解析";
+    el.feedbackArea.style.display = "block";
+  }
+
+  function nextQuestion(){
+    currentQIndex++;
+    if(currentQIndex<currentQuestions.length){ renderQuestion(); }
+    else{
+      const finalScore=Math.round(score/currentQuestions.length*100);
+      showModal(`得分：${finalScore}`,"測驗結束");
+      
+      google.script.run.withSuccessHandler(res=>{
+         if(res.status === 'success'){
+           if(res.passCount === 2){ showCert(currentUnitName); }
+         }
+         switchPage('menu-page');
+      }).saveUserProgress(userInfo.id,userInfo.name, UNIT_NAMES.indexOf(currentUnitName), finalScore, userInfo.class);
+    }
+  }
+
+  function loadMyProgress() {
+    switchPage('record-page');
+    el.recordListContainer.innerHTML = '<div style="text-align:center; padding:20px;">載入中...</div>';
+    
+    google.script.run.withSuccessHandler(counts => {
+      let html = "";
+      UNIT_NAMES.forEach((unit, idx) => {
+        let count = counts[idx+1] || 0;
+        let displayCount = count > 2 ? 2 : count;
+        let countClass = count >= 2 ? "record-count done" : "record-count";
+        html += `
+          <div class="record-item">
+            <div class="record-title">${unit}</div>
+            <div class="${countClass}">${displayCount} / 2</div>
+          </div>
+        `;
+      });
+      el.recordListContainer.innerHTML = html;
+    }).getStudentProgress(userInfo.id, userInfo.class);
+  }
+
+  function showCert(unitName) {
+    el.certUnitText.innerText = unitName;
+    el.certNameText.innerText = userInfo.name;
+    el.certIdText.innerText = "學號：" + userInfo.id;
+    el.certOverlay.style.display = 'flex';
+  }
+  function closeCert() { el.certOverlay.style.display = 'none'; }
+
+  function confirmHome(){ showConfirm("要放棄進度返回首頁嗎？", ()=> { switchPage('menu-page'); });}
+  function switchPage(id){ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById(id).classList.add('active'); }
 </script>
+
 </body>
 </html>
+
